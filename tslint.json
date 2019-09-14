@@ -1,0 +1,42 @@
+{
+  "extends": [
+    "tslint:latest",
+    "tslint-config-prettier"
+  ],
+  "linterOptions": {
+    "exclude": ["test/data/*.ts"]
+  },
+  "rules": {
+    "quotemark": [true, "single", "avoid-escape"],
+    "interface-name": [false],
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-pascal-case",
+      "allow-leading-underscore"
+    ],
+    "indent": [true, "spaces", 2],
+    "no-bitwise": false,
+    "one-variable-per-declaration": [false],
+    "eofline": false,
+    "no-string-literal": false,
+    "max-classes-per-file": [false],
+    "no-inferrable-types": [true],
+    "arrow-parens": false,
+    "object-literal-sort-keys": false,
+    "member-ordering": [false],
+    "array-type": [true, "array"],
+    "ordered-imports": [false],
+    "no-implicit-dependencies": [true, "dev"],
+    "trailing-comma": [false],
+    "member-access": [false],
+    "no-namespace": [false],
+    "no-var-requires": false, // needed for requiring styles
+    "space-before-function-paren": [false],
+    "interface-over-type-literal": [false],
+    "no-console": [true, "log", "info"],
+    "no-empty-interface": [false],
+    "object-literal-shorthand": [false]
+  }
+}
