@@ -14,8 +14,8 @@
     "test": "npm run lint && npm run unit-tests && npm run prettier-check",
     "unit-tests": "mocha --require ts-node/register test/{**/,}*-test.ts",
     "lint": "tslint -c tslint.json src/**/* test/**/*",
-    "prettier-check": "prettier --config .prettierrc --check '{{src,test}/**/*,*}.ts'",
-    "prettier": "prettier --config .prettierrc --write '{{src,test}/**/*,*}.ts'",
+    "prettier-check": "prettier --config .prettierrc --check \"{{src,test}/**/*,*}.ts\"",
+    "prettier": "prettier --config .prettierrc --write \"{{src,test}/**/*,*}.ts\"",
     "build": "tsc",
     "watch-tests": "mocha --watch --compilers ts:ts-node/register test/{**/,}*-test.ts",
     "clean": "rm -fr dist"
