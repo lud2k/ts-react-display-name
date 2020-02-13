@@ -1,3 +1,4 @@
+import * as path from 'path'
 import * as ts from 'typescript'
 
 export interface AddDisplayNameOptions {
@@ -34,7 +35,8 @@ const createSetDisplayNameStatement = (node: ts.VariableDeclaration, sf: ts.Sour
  * Creates a static class property named "displayName" and with value the name of the class.
  */
 const createDisplayNameProperty = (node: ts.ClassDeclaration, sf: ts.SourceFile) => {
-  const name = ts.getNameOfDeclaration(node).getText(sf)
+  const declaration = ts.getNameOfDeclaration(node)
+  const name: string = declaration ? declaration.getText(sf) : path.parse(sf.fileName).name
   return ts.createProperty(
     undefined,
     ts.createModifiersFromModifierFlags(ts.ModifierFlags.Static),

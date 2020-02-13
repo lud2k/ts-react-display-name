@@ -66,4 +66,12 @@ describe('index.ts', () => {
     const result = ts.transpileModule(file('pure-comp.tsx'), options)
     expect(result.outputText).to.equal(file('pure-comp.ts'))
   })
+
+  it('adds displayName to unamed default classes extending React.Component', () => {
+    const result = ts.transpileModule(file('react-comp-unamed-default.tsx'), {
+      ...options,
+      fileName: 'react-comp-unamed-default.tsx',
+    })
+    expect(result.outputText).to.equal(file('react-comp-unamed-default.ts'))
+  })
 })
