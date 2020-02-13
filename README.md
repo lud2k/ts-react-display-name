@@ -10,6 +10,7 @@ Typescript transformer that adds displayName to React components.
 ### Installation
 
 Install the library:
+
 ```bash
 npm install --save-dev ts-react-display-name
 ```
@@ -17,11 +18,13 @@ npm install --save-dev ts-react-display-name
 ### Webpack
 
 If you are using Webpack, import the tranformer:
+
 ```js
 const { addDisplayNameTransformer } = require('ts-react-display-name')
 ```
 
 Then add it to ts-loader's options:
+
 ```js
 {
   test: /\.(tsx?)$/,
@@ -34,10 +37,10 @@ Then add it to ts-loader's options:
 }
 ```
 
-
 ## Example
 
 Using this transformer, the following code:
+
 ```js
 // Function component
 const TestFuncComponent: React.FC<{}> = () => <p>...</p>
@@ -49,6 +52,7 @@ export class TestComponent extends React.Component<{}, {}> {
 ```
 
 Becomes:
+
 ```js
 // Function component
 const TestFuncComponent: React.FC<{}> = () => <p>...</p>
@@ -60,7 +64,6 @@ export class TestComponent extends React.Component<{}, {}> {
   render() { ... }
 }
 ```
-
 
 ## Advanced
 
@@ -77,14 +80,14 @@ worth it.
 
 ```js
 addDisplayNameTransformer({
-  onlyFileRoot: true
+  onlyFileRoot: true,
 })
 ```
 
 #### funcTypes
 
 List of function types to add displayName to. Display names will only be added
-to functions *explicitly* typed with one of those.
+to functions _explicitly_ typed with one of those.
 
 If you import React as "R" then you will have to update this list to be
 ['R.FunctionComponent', 'R.FC']. This list needs to match exactly what is
@@ -94,14 +97,14 @@ in the source code.
 
 ```js
 addDisplayNameTransformer({
-  funcTypes: ['React.FunctionComponent', 'React.FC']
+  funcTypes: ['React.FunctionComponent', 'React.FC'],
 })
 ```
 
 #### classTypes
 
 List of class types to add displayName to. Display names will only be added
-to classes *explicitly* extending one of those.
+to classes _explicitly_ extending one of those.
 
 If you import React as "R" then you will have to update this list to be
 ['R.Component', 'R.PureComponent']. This list needs to match exactly what is
@@ -111,22 +114,26 @@ in the source code.
 
 ```js
 addDisplayNameTransformer({
-  classTypes: ['React.Component', 'React.PureComponent']
+  classTypes: ['React.Component', 'React.PureComponent'],
 })
 ```
-
 
 ## Contributing to this project
 
 Feel free to contribute to this project and submit pull requests.
 
 Here are a couple useful commands:
+
 - `npm run test`: Runs tests and linters.
 - `npm run build`: Builds the library.
 
+### Adding Unit test data
+
+1. Add your origin test data file as `/test/data/xxx.tsx`
+2. Paste your raw `/test/data/xxx.tsx` file into [Typescript Playround](https://www.typescriptlang.org/play/index.html?target=1&jsx=2) using the link settings, then add the displayName (function or static property) and save the generated output to `test/data/xxx.ts`
 
 ## TODOs
 
 - Try to find a better way to compare types (without converting to text
-using getText(sourceFile))
+  using getText(sourceFile))
 - Optionally detect if there is already a displayName and don't override it.
