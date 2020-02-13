@@ -84,6 +84,22 @@ const isReactComponent = (
 }
 
 /**
+ * Checks if `static displayName` is defined for class
+ */
+function isStaticDisplayNameDefined(classDeclaration: ts.ClassDeclaration): boolean {
+  return (
+    classDeclaration.members.find(
+      member =>
+        member.name.getText() === 'displayName' &&
+        member.kind === ts.SyntaxKind.PropertyDeclaration &&
+        member.modifiers.some(
+          modifier => (modifier.kind & ts.ModifierFlags.Static) === ts.ModifierFlags.Static
+        )
+    ) !== undefined
+  )
+}
+
+/**
  * Recursive function that visits the nodes of the file.
  */
 function visit(ctx: ts.TransformationContext, sf: ts.SourceFile, options: AddDisplayNameOptions) {
@@ -111,8 +127,10 @@ function visit(ctx: ts.TransformationContext, sf: ts.SourceFile, options: AddDis
     }
     if (ts.isClassDeclaration(node) && isReactComponent(node, sf, options)) {
       const result = ts.visitEachChild(node, visitor, ctx)
-      const member = createDisplayNameProperty(node, sf)
-      result.members = ts.createNodeArray([...result.members, member])
+      if (!isStaticDisplayNameDefined(result)) {
+        const member = createDisplayNameProperty(node, sf)
+        result.members = ts.createNodeArray([...result.members, member])
+      }
       return result
     }
     if (!options.onlyFileRoot || ts.isSourceFile(node)) {

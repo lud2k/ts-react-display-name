@@ -74,4 +74,9 @@ describe('index.ts', () => {
     })
     expect(result.outputText).to.equal(file('react-comp-unamed-default.ts'))
   })
+
+  it('does not add displayName to classes extending React.Component with static displayName', () => {
+    const result = ts.transpileModule(file('react-comp-existing.tsx'), options)
+    expect(result.outputText).to.equal(file('react-comp-existing.ts'))
+  })
 })
