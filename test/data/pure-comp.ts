@@ -20,7 +20,7 @@ var TestComponent = /** @class */ (function (_super) {
     TestComponent.prototype.render = function () {
         return React.createElement("p", null, "returned value");
     };
+    TestComponent.displayName = "TestComponent";
     return TestComponent;
 }(React.PureComponent));
 export { TestComponent };
-TestComponent.displayName = "TestComponent";

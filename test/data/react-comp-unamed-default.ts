@@ -20,7 +20,7 @@ var default_1 = /** @class */ (function (_super) {
     default_1.prototype.render = function () {
         return React.createElement("p", null, "returned value");
     };
+    default_1.displayName = "react-comp-unamed-default";
     return default_1;
 }(React.Component));
 export default default_1;
-default_1.displayName = "react-comp-unamed-default";

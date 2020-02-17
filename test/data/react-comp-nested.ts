@@ -26,12 +26,12 @@ var TestComponent = /** @class */ (function (_super) {
             TestComponentNested.prototype.render = function () {
                 return React.createElement("p", null, "returned value nested");
             };
+            TestComponentNested.displayName = "TestComponentNested";
             return TestComponentNested;
         }(React.Component));
-        TestComponentNested.displayName = "TestComponentNested";
         return React.createElement(TestComponentNested, null);
     };
+    TestComponent.displayName = "TestComponent";
     return TestComponent;
 }(React.Component));
 export { TestComponent };
-TestComponent.displayName = "TestComponent";

@@ -129,7 +129,8 @@ function visit(ctx: ts.TransformationContext, sf: ts.SourceFile, options: AddDis
       const result = ts.visitEachChild(node, visitor, ctx)
       if (!isStaticDisplayNameDefined(result)) {
         const member = createDisplayNameProperty(node, sf)
-        result.members = ts.createNodeArray([...result.members, member])
+        return ts.updateClassDeclaration(node, node.decorators, node.modifiers, node.name,
+          node.typeParameters, node.heritageClauses, ts.createNodeArray([...result.members, member]))
       }
       return result
     }

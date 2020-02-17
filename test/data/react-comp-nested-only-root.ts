@@ -30,7 +30,7 @@ var TestComponent = /** @class */ (function (_super) {
         }(React.Component));
         return React.createElement(TestComponentNested, null);
     };
+    TestComponent.displayName = "TestComponent";
     return TestComponent;
 }(React.Component));
 export { TestComponent };
-TestComponent.displayName = "TestComponent";

@@ -79,4 +79,9 @@ describe('index.ts', () => {
     const result = ts.transpileModule(file('react-comp-existing.tsx'), options)
     expect(result.outputText).to.equal(file('react-comp-existing.ts'))
   })
+
+  it('does not crash when no prop/state is declared on a React.Component', () => {
+    const result = ts.transpileModule(file('react-comp-no-prop-state.tsx'), options)
+    expect(result.outputText).to.equal(file('react-comp-no-prop-state.ts'))
+  })
 })
