@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
 const ts = require("typescript");
 /**
  * Creates an assignment statement. We assign the name of the given node to the property displayName
@@ -14,7 +15,8 @@ const createSetDisplayNameStatement = (node, sf) => {
  * Creates a static class property named "displayName" and with value the name of the class.
  */
 const createDisplayNameProperty = (node, sf) => {
-    const name = ts.getNameOfDeclaration(node).getText(sf);
+    const declaration = ts.getNameOfDeclaration(node);
+    const name = declaration ? declaration.getText(sf) : path.parse(sf.fileName).name;
     return ts.createProperty(undefined, ts.createModifiersFromModifierFlags(ts.ModifierFlags.Static), 'displayName', undefined, undefined, ts.createStringLiteral(name));
 };
 /**
@@ -38,6 +40,14 @@ const isReactComponent = (node, sf, options) => {
                 return options.classTypes.some(classType => typeStr.startsWith(classType));
             })));
 };
+/**
+ * Checks if `static displayName` is defined for class
+ */
+function isStaticDisplayNameDefined(classDeclaration) {
+    return (classDeclaration.members.find(member => member.name.getText() === 'displayName' &&
+        member.kind === ts.SyntaxKind.PropertyDeclaration &&
+        member.modifiers.some(modifier => (modifier.kind & ts.ModifierFlags.Static) === ts.ModifierFlags.Static)) !== undefined);
+}
 /**
  * Recursive function that visits the nodes of the file.
  */
@@ -67,8 +77,10 @@ function visit(ctx, sf, options) {
         }
         if (ts.isClassDeclaration(node) && isReactComponent(node, sf, options)) {
             const result = ts.visitEachChild(node, visitor, ctx);
-            const member = createDisplayNameProperty(node, sf);
-            result.members = ts.createNodeArray([...result.members, member]);
+            if (!isStaticDisplayNameDefined(result)) {
+                const member = createDisplayNameProperty(node, sf);
+                result.members = ts.createNodeArray([...result.members, member]);
+            }
             return result;
         }
         if (!options.onlyFileRoot || ts.isSourceFile(node)) {
