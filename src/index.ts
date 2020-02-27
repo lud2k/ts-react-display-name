@@ -88,14 +88,19 @@ const isReactComponent = (
  */
 function isStaticDisplayNameDefined(classDeclaration: ts.ClassDeclaration): boolean {
   return (
-    classDeclaration.members.find(
-      member =>
-        member.name.getText() === 'displayName' &&
-        member.kind === ts.SyntaxKind.PropertyDeclaration &&
-        member.modifiers.some(
-          modifier => (modifier.kind & ts.ModifierFlags.Static) === ts.ModifierFlags.Static
+    classDeclaration.members.find(member => {
+      try {
+        return (
+          member.kind === ts.SyntaxKind.PropertyDeclaration &&
+          member.modifiers.some(
+            modifier => (modifier.kind & ts.ModifierFlags.Static) === ts.ModifierFlags.Static
+          ) &&
+          (member.name as ts.Identifier).text === 'displayName'
         )
-    ) !== undefined
+      } catch (e) {
+        return false
+      }
+    }) !== undefined
   )
 }
 

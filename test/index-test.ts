@@ -46,6 +46,11 @@ describe('index.ts', () => {
     expect(result.outputText).to.equal(file('react-comp.ts'))
   })
 
+  it('adds displayName to mulitple classes extending React.Component', () => {
+    const result = ts.transpileModule(file('react-comp-multiple.tsx'), options)
+    expect(result.outputText).to.equal(file('react-comp-multiple.ts'))
+  })
+
   it('adds displayName to classes extending React.Component containing other static prop', () => {
     const result = ts.transpileModule(file('react-comp-other-static.tsx'), options)
     expect(result.outputText).to.equal(file('react-comp-other-static.ts'))
