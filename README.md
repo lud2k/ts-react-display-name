@@ -136,4 +136,4 @@ Here are a couple useful commands:
 
 - Try to find a better way to compare types (without converting to text
   using getText(sourceFile))
-- Optionally detect if there is already a displayName and don't override it.
+- Optionally detect if there is already a displayName for functional componments and don't override it.
