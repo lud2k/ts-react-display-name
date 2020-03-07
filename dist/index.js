@@ -44,9 +44,16 @@ const isReactComponent = (node, sf, options) => {
  * Checks if `static displayName` is defined for class
  */
 function isStaticDisplayNameDefined(classDeclaration) {
-    return (classDeclaration.members.find(member => member.name.getText() === 'displayName' &&
-        member.kind === ts.SyntaxKind.PropertyDeclaration &&
-        member.modifiers.some(modifier => (modifier.kind & ts.ModifierFlags.Static) === ts.ModifierFlags.Static)) !== undefined);
+    return (classDeclaration.members.find(member => {
+        try {
+            return (member.kind === ts.SyntaxKind.PropertyDeclaration &&
+                member.modifiers.some(modifier => (modifier.kind & ts.ModifierFlags.Static) === ts.ModifierFlags.Static) &&
+                member.name.text === 'displayName');
+        }
+        catch (e) {
+            return false;
+        }
+    }) !== undefined);
 }
 /**
  * Recursive function that visits the nodes of the file.
@@ -79,7 +86,7 @@ function visit(ctx, sf, options) {
             const result = ts.visitEachChild(node, visitor, ctx);
             if (!isStaticDisplayNameDefined(result)) {
                 const member = createDisplayNameProperty(node, sf);
-                result.members = ts.createNodeArray([...result.members, member]);
+                return ts.updateClassDeclaration(node, node.decorators, node.modifiers, node.name, node.typeParameters, node.heritageClauses, ts.createNodeArray([...result.members, member]));
             }
             return result;
         }
