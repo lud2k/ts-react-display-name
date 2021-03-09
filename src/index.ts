@@ -19,6 +19,11 @@ export interface AddDisplayNameOptions {
    * Default: ['React.Component', 'React.PureComponent']
    */
   classTypes: string[]
+  /**
+   * List of factory functions to add displayName to.
+   * Default: ['React.forwardRef', 'React.memo']
+   */
+  factoryFuncs: string[]
 }
 
 /**
@@ -84,6 +89,35 @@ const isReactComponent = (
 }
 
 /**
+ * Checks if a variable declaration is for a React.forwardRef/React.memo.
+ */
+const isFactoryComponent = (
+  node: ts.CallExpression | ts.PropertyAccessExpression,
+  sf: ts.SourceFile,
+  options: AddDisplayNameOptions
+) => {
+  if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+    const type = ts.getNameOfDeclaration(node.expression).getText(sf)
+    return options.factoryFuncs.some(factoryType => factoryType === type)
+  }
+  if (
+    ts.isPropertyAccessExpression(node) &&
+    ts.isIdentifier(node.expression) &&
+    ts.isIdentifier(node.name)
+  ) {
+    const type =
+      ts.getNameOfDeclaration(node.expression).getText(sf) +
+      '.' +
+      ts.getNameOfDeclaration(node.name).getText(sf)
+    return options.factoryFuncs.some(factoryType => factoryType === type)
+  }
+  if (ts.isCallExpression(node.expression) || ts.isPropertyAccessExpression(node.expression)) {
+    return isFactoryComponent(node.expression, sf, options)
+  }
+  return false
+}
+
+/**
  * Checks if `static displayName` is defined for class
  */
 function isStaticDisplayNameDefined(classDeclaration: ts.ClassDeclaration): boolean {
@@ -114,8 +148,18 @@ function visit(ctx: ts.TransformationContext, sf: ts.SourceFile, options: AddDis
       ts.forEachChild(node, (child1: ts.Node) => {
         if (ts.isVariableDeclarationList(child1)) {
           ts.forEachChild(child1, (child2: ts.Node) => {
-            if (ts.isVariableDeclaration(child2) && isFunctionComponent(child2, sf, options)) {
-              components.push(child2)
+            if (ts.isVariableDeclaration(child2)) {
+              if (isFunctionComponent(child2, sf, options)) {
+                components.push(child2)
+              } else {
+                ts.forEachChild(child2, (child3: ts.Node) => {
+                  if (ts.isCallExpression(child3) || ts.isPropertyAccessExpression(child3)) {
+                    if (isFactoryComponent(child3, sf, options)) {
+                      components.push(child2)
+                    }
+                  }
+                })
+              }
             }
           })
         }
@@ -163,6 +207,7 @@ export function addDisplayNameTransformer(options: Partial<AddDisplayNameOptions
     onlyFileRoot: false,
     funcTypes: ['React.FunctionComponent', 'React.FC'],
     classTypes: ['React.Component', 'React.PureComponent'],
+    factoryFuncs: ['React.forwardRef', 'React.memo'],
     ...options,
   }
   return (ctx: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {

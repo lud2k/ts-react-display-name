@@ -63,6 +63,12 @@ export class TestComponent extends React.Component<{}, {}> {
   static displayName = 'TestComponent'
   render() { ... }
 }
+
+// Factory component
+const TextFactoryComponent = React.forwardRef<HTMLParagraphElement, {}>(
+  (props, ref) => <p ref={ref}>...</p>
+)
+TextFactoryComponent.displayName = 'TextFactoryComponent'
 ```
 
 ## Advanced
@@ -115,6 +121,23 @@ in the source code.
 ```js
 addDisplayNameTransformer({
   classTypes: ['React.Component', 'React.PureComponent'],
+})
+```
+
+#### factoryFuncs
+
+List of factory functions to add displayName to. Display names will only be added
+to variables _explicitly_ called with one of those.
+
+If you import React as "R" then you will have to update this list to be
+['R.forwardRef', 'R.memo']. This list needs to match exactly what is
+in the source code.
+
+- Default: ['React.forwardRef', 'React.memo']
+
+```js
+addDisplayNameTransformer({
+  factoryFuncs: ['React.forwardRef', 'React.memo'],
 })
 ```
 
