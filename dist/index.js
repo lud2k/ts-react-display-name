@@ -41,6 +41,27 @@ const isReactComponent = (node, sf, options) => {
             })));
 };
 /**
+ * Checks if a variable declaration is for a React.forwardRef/React.memo.
+ */
+const isFactoryComponent = (node, sf, options) => {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+        const type = ts.getNameOfDeclaration(node.expression).getText(sf);
+        return options.factoryFuncs.some(factoryType => factoryType === type);
+    }
+    if (ts.isPropertyAccessExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        ts.isIdentifier(node.name)) {
+        const type = ts.getNameOfDeclaration(node.expression).getText(sf) +
+            '.' +
+            ts.getNameOfDeclaration(node.name).getText(sf);
+        return options.factoryFuncs.some(factoryType => factoryType === type);
+    }
+    if (ts.isCallExpression(node.expression) || ts.isPropertyAccessExpression(node.expression)) {
+        return isFactoryComponent(node.expression, sf, options);
+    }
+    return false;
+};
+/**
  * Checks if `static displayName` is defined for class
  */
 function isStaticDisplayNameDefined(classDeclaration) {
@@ -65,8 +86,19 @@ function visit(ctx, sf, options) {
             ts.forEachChild(node, (child1) => {
                 if (ts.isVariableDeclarationList(child1)) {
                     ts.forEachChild(child1, (child2) => {
-                        if (ts.isVariableDeclaration(child2) && isFunctionComponent(child2, sf, options)) {
-                            components.push(child2);
+                        if (ts.isVariableDeclaration(child2)) {
+                            if (isFunctionComponent(child2, sf, options)) {
+                                components.push(child2);
+                            }
+                            else {
+                                ts.forEachChild(child2, (child3) => {
+                                    if (ts.isCallExpression(child3) || ts.isPropertyAccessExpression(child3)) {
+                                        if (isFactoryComponent(child3, sf, options)) {
+                                            components.push(child2);
+                                        }
+                                    }
+                                });
+                            }
                         }
                     });
                 }
@@ -107,6 +139,7 @@ function addDisplayNameTransformer(options = {}) {
         onlyFileRoot: false,
         funcTypes: ['React.FunctionComponent', 'React.FC'],
         classTypes: ['React.Component', 'React.PureComponent'],
+        factoryFuncs: ['React.forwardRef', 'React.memo'],
         ...options,
     };
     return (ctx) => {

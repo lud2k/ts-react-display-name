@@ -17,6 +17,11 @@ export interface AddDisplayNameOptions {
      * Default: ['React.Component', 'React.PureComponent']
      */
     classTypes: string[];
+    /**
+     * List of factory functions to add displayName to.
+     * Default: ['React.forwardRef', 'React.memo']
+     */
+    factoryFuncs: string[];
 }
 /**
  * Factory method that creates a Transformer.

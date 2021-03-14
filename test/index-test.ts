@@ -89,4 +89,14 @@ describe('index.ts', () => {
     const result = ts.transpileModule(file('react-comp-no-prop-state.tsx'), options)
     expect(result.outputText).to.equal(file('react-comp-no-prop-state.ts'))
   })
+
+  it('adds displayName to forwardRef', () => {
+    const result = ts.transpileModule(file('forward-ref.tsx'), options)
+    expect(result.outputText).to.equal(file('forward-ref.ts'))
+  })
+
+  it('adds displayName to many forwardRef', () => {
+    const result = ts.transpileModule(file('forward-ref-multi.tsx'), options)
+    expect(result.outputText).to.equal(file('forward-ref-multi.ts'))
+  })
 })
