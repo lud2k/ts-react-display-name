@@ -37,6 +37,22 @@ Then add it to ts-loader's options:
 }
 ```
 
+### TTypeScript
+
+Add it to `plugins` in your `tsconfig.json`
+
+```json
+{
+  "compilerOptions": {
+    "plugins": [
+      {
+        "transform": "ts-react-display-name"
+      }
+    ]
+  }
+}
+```
+
 ## Example
 
 Using this transformer, the following code:
@@ -90,6 +106,13 @@ addDisplayNameTransformer({
 })
 ```
 
+```json
+{
+  "transform": "ts-react-display-name",
+  "onlyFileRoot": true
+}
+```
+
 #### funcTypes
 
 List of function types to add displayName to. Display names will only be added
@@ -105,6 +128,13 @@ in the source code.
 addDisplayNameTransformer({
   funcTypes: ['React.FunctionComponent', 'React.FC'],
 })
+```
+
+```json
+{
+  "transform": "ts-react-display-name",
+  "funcTypes": ["React.FunctionComponent", "React.FC"]
+}
 ```
 
 #### classTypes
@@ -124,6 +154,13 @@ addDisplayNameTransformer({
 })
 ```
 
+```json
+{
+  "transform": "ts-react-display-name",
+  "classTypes": ["React.Component", "React.PureComponent"]
+}
+```
+
 #### factoryFuncs
 
 List of factory functions to add displayName to. Display names will only be added
@@ -139,6 +176,13 @@ in the source code.
 addDisplayNameTransformer({
   factoryFuncs: ['React.forwardRef', 'React.memo'],
 })
+```
+
+```json
+{
+  "transform": "ts-react-display-name",
+  "factoryFuncs": ["React.forwardRef", "React.memo"]
+}
 ```
 
 ## Contributing to this project
