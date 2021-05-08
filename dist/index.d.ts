@@ -27,3 +27,4 @@ export interface AddDisplayNameOptions {
  * Factory method that creates a Transformer.
  */
 export declare function addDisplayNameTransformer(options?: Partial<AddDisplayNameOptions>): (ctx: ts.TransformationContext) => ts.Transformer<ts.SourceFile>;
+export default function (_program: ts.Program, options: AddDisplayNameOptions): (ctx: ts.TransformationContext) => ts.Transformer<ts.SourceFile>;

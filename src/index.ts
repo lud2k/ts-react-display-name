@@ -214,3 +214,7 @@ export function addDisplayNameTransformer(options: Partial<AddDisplayNameOptions
     return (sf: ts.SourceFile) => ts.visitNode(sf, visit(ctx, sf, optionsWithDefaults))
   }
 }
+
+export default function(_program: ts.Program, options: AddDisplayNameOptions) {
+  return addDisplayNameTransformer(options)
+}

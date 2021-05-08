@@ -147,3 +147,7 @@ function addDisplayNameTransformer(options = {}) {
     };
 }
 exports.addDisplayNameTransformer = addDisplayNameTransformer;
+function default_1(_program, options) {
+    return addDisplayNameTransformer(options);
+}
+exports.default = default_1;
