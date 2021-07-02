@@ -85,6 +85,12 @@ const TextFactoryComponent = React.forwardRef<HTMLParagraphElement, {}>(
   (props, ref) => <p ref={ref}>...</p>
 )
 TextFactoryComponent.displayName = 'TextFactoryComponent'
+
+// Tagged template
+const TaggedTemplateComponent = styled.div`
+  color: red;
+`
+TaggedTemplateComponent.displayName = 'TaggedTemplateComponent'
 ```
 
 ## Advanced
@@ -171,6 +177,19 @@ If you import React as "R" then you will have to update this list to be
 in the source code.
 
 - Default: ['React.forwardRef', 'React.memo']
+
+#### taggedTemplateModules
+
+List of tagged template modules to add displayName to. 
+For example, if you set `taggedTemplateModules` to `['styled']` then `displayName` will be added to any component created like this 
+
+```ts
+const TaggedTemplateComponent = styled.div`
+  color: red;
+`
+```
+
+- Default: []
 
 ```js
 addDisplayNameTransformer({

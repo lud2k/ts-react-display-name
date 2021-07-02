@@ -22,6 +22,11 @@ export interface AddDisplayNameOptions {
      * Default: ['React.forwardRef', 'React.memo']
      */
     factoryFuncs: string[];
+    /**
+     * List of tagged template modules to add displayName to.
+     * Default: []
+     */
+    taggedTemplateModules: string[];
 }
 /**
  * Factory method that creates a Transformer.
