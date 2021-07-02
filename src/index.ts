@@ -24,6 +24,11 @@ export interface AddDisplayNameOptions {
    * Default: ['React.forwardRef', 'React.memo']
    */
   factoryFuncs: string[]
+  /**
+   * List of tagged template modules to add displayName to.
+   * Default: []
+   */
+  taggedTemplateModules: string[]
 }
 
 /**
@@ -118,6 +123,17 @@ const isFactoryComponent = (
 }
 
 /**
+ * Checks if a variable declaration is for a tagged template.
+ */
+const isTaggedTemplate = (node: ts.Node, sf: ts.SourceFile, options: AddDisplayNameOptions) => {
+  if (ts.isTaggedTemplateExpression(node) && ts.isPropertyAccessExpression(node.tag)) {
+    const moduleName = ts.getNameOfDeclaration(node.tag.expression).getText(sf)
+    return options.taggedTemplateModules.map(x => x === moduleName)
+  }
+  return false
+}
+
+/**
  * Checks if `static displayName` is defined for class
  */
 function isStaticDisplayNameDefined(classDeclaration: ts.ClassDeclaration): boolean {
@@ -153,6 +169,12 @@ function visit(ctx: ts.TransformationContext, sf: ts.SourceFile, options: AddDis
                 components.push(child2)
               } else {
                 ts.forEachChild(child2, (child3: ts.Node) => {
+                  if (
+                    options.taggedTemplateModules.length > 0 &&
+                    isTaggedTemplate(child3, sf, options)
+                  ) {
+                    components.push(child2)
+                  }
                   if (ts.isCallExpression(child3) || ts.isPropertyAccessExpression(child3)) {
                     if (isFactoryComponent(child3, sf, options)) {
                       components.push(child2)
@@ -208,6 +230,7 @@ export function addDisplayNameTransformer(options: Partial<AddDisplayNameOptions
     funcTypes: ['React.FunctionComponent', 'React.FC'],
     classTypes: ['React.Component', 'React.PureComponent'],
     factoryFuncs: ['React.forwardRef', 'React.memo'],
+    taggedTemplateModules: [],
     ...options,
   }
   return (ctx: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {

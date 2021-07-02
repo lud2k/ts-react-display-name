@@ -99,4 +99,10 @@ describe('index.ts', () => {
     const result = ts.transpileModule(file('forward-ref-multi.tsx'), options)
     expect(result.outputText).to.equal(file('forward-ref-multi.ts'))
   })
+
+  it('adds displayName to tagged template', () => {
+    const taggedTemplateOptions = makeOptions({ taggedTemplateModules: ['styled'] })
+    const result = ts.transpileModule(file('tagged-template.tsx'), taggedTemplateOptions)
+    expect(result.outputText).to.equal(file('tagged-template.ts'))
+  })
 })
