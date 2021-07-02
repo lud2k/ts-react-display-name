@@ -62,6 +62,16 @@ const isFactoryComponent = (node, sf, options) => {
     return false;
 };
 /**
+ * Checks if a variable declaration is for a tagged template.
+ */
+const isTaggedTemplate = (node, sf, options) => {
+    if (ts.isTaggedTemplateExpression(node) && ts.isPropertyAccessExpression(node.tag)) {
+        const moduleName = ts.getNameOfDeclaration(node.tag.expression).getText(sf);
+        return options.taggedTemplateModules.map(x => x === moduleName);
+    }
+    return false;
+};
+/**
  * Checks if `static displayName` is defined for class
  */
 function isStaticDisplayNameDefined(classDeclaration) {
@@ -92,6 +102,10 @@ function visit(ctx, sf, options) {
                             }
                             else {
                                 ts.forEachChild(child2, (child3) => {
+                                    if (options.taggedTemplateModules.length > 0 &&
+                                        isTaggedTemplate(child3, sf, options)) {
+                                        components.push(child2);
+                                    }
                                     if (ts.isCallExpression(child3) || ts.isPropertyAccessExpression(child3)) {
                                         if (isFactoryComponent(child3, sf, options)) {
                                             components.push(child2);
@@ -140,6 +154,7 @@ function addDisplayNameTransformer(options = {}) {
         funcTypes: ['React.FunctionComponent', 'React.FC'],
         classTypes: ['React.Component', 'React.PureComponent'],
         factoryFuncs: ['React.forwardRef', 'React.memo'],
+        taggedTemplateModules: [],
         ...options,
     };
     return (ctx) => {
