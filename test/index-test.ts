@@ -99,4 +99,19 @@ describe('index.ts', () => {
     const result = ts.transpileModule(file('forward-ref-multi.tsx'), options)
     expect(result.outputText).to.equal(file('forward-ref-multi.ts'))
   })
+
+  it('does not add displayName to function component with already declared displayName', () => {
+    const result = ts.transpileModule(file('func-comp-existing.tsx'), options)
+    expect(result.outputText).to.equal(file('func-comp-existing.ts'))
+  })
+
+  it('does not add displayName to forwardRef with already declared displayName', () => {
+    const result = ts.transpileModule(file('forward-ref-existing.tsx'), options)
+    expect(result.outputText).to.equal(file('forward-ref-existing.ts'))
+  })
+
+  it('correctly adds displayName to nested function components in the presense of already declared displayName', () => {
+    const result = ts.transpileModule(file('func-comp-nested-existing.tsx'), options)
+    expect(result.outputText).to.equal(file('func-comp-nested-existing.ts'))
+  })
 })
