@@ -139,12 +139,44 @@ function isStaticDisplayNameDefined(classDeclaration: ts.ClassDeclaration): bool
 }
 
 /**
+ * Check if node is Component.displayName = "string" and return "Component" if it is
+ */
+function nodeIsComponentDisplayNameAssignment(node: ts.Node): string | undefined {
+  if (ts.isExpressionStatement(node)) {
+    const expression = node.expression
+    if (ts.isBinaryExpression(expression) && expression.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
+      const left = expression.left
+      if (ts.isPropertyAccessExpression(left)) {
+        return left.name.getText() === 'displayName' ? left.expression.getText() : undefined
+      }
+    }
+  }
+  return undefined
+}
+
+/**
+ * Accumulate all components that have a display name specified at the current node level
+ */
+const accumulateExistingDisplayName = (node: ts.Node) => {
+  const componentWithNames = {};
+  if (node.parent) {
+    node.parent.forEachChild(c => {
+      const componentName = nodeIsComponentDisplayNameAssignment(c)
+      if (componentName) {
+        componentWithNames[componentName] = true
+      }
+    })
+  }
+  return componentWithNames;
+}
+
+/**
  * Recursive function that visits the nodes of the file.
  */
 function visit(ctx: ts.TransformationContext, sf: ts.SourceFile, options: AddDisplayNameOptions) {
   const visitor: ts.Visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
     if (ts.isVariableStatement(node)) {
-      const components = []
+      const components: ts.VariableDeclaration[] = []
       ts.forEachChild(node, (child1: ts.Node) => {
         if (ts.isVariableDeclarationList(child1)) {
           ts.forEachChild(child1, (child2: ts.Node) => {
@@ -169,7 +201,14 @@ function visit(ctx: ts.TransformationContext, sf: ts.SourceFile, options: AddDis
         result = ts.visitEachChild(node, visitor, ctx)
       }
       if (components.length) {
-        return [result, ...components.map(comp => createSetDisplayNameStatement(comp, sf))]
+        const componentHasDisplayName = accumulateExistingDisplayName(node);
+        const displayNameStatements = [];
+        components.forEach(comp => {
+          if (!(comp.name.getText() in componentHasDisplayName)) {
+            displayNameStatements.push(createSetDisplayNameStatement(comp, sf))
+          }
+        })
+        return [result, ...displayNameStatements]
       } else {
         return result
       }
